@@ -1,0 +1,31 @@
+from pydantic import BaseModel
+
+from langchain_openai import ChatOpenAI
+from langgraph.graph import START, END, StateGraph
+from langgraph.types import Send
+
+from schemas import *
+from prompts import *
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+OPEN_API_KEY = os.getenv("API_KEY")
+
+# Modelos
+llm = ChatOpenAI(model="gpt-3.5-turbo", api_key=OPEN_API_KEY)
+reasoning_llm = ChatOpenAI(model="o4-mini", api_key=OPEN_API_KEY)
+
+
+# Compilando o grafo
+builder = StateGraph(ReportState)
+graph = builder.compile()
+
+
+# Execução
+if __name__ == "__main__":
+    user_input = """
+    Quero que você me explique o processo
+    total para construir um agente de IA
+    """
+    graph.invoke({"user_input":user_input})
